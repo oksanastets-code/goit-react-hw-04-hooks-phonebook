@@ -8,9 +8,22 @@ import ContactList from './components/ContactList';
 import Filter from './components/Filter';
 import { Container } from './App.styled';
 
-export default function App() {
-  const [contacts, setContacts] = useState([]);
+const useLocalStorage = (key, defaultValue) => {
+  const [state, setState] = useState(() => {
+    return JSON.parse(window.localStorage.getItem(key)) ?? defaultValue;
+  });
+  useEffect(() => {
+    // if (contacts !== prevContacts) {
+    window.localStorage.setItem(key, JSON.stringify(key));
+    // }
+  }, [state]);
+  return [state, setState];
+};
+
+export default function App({ contactId }) {
+  const [contacts, setContacts] = useLocalStorage('contacts', []);
   const [filter, setFilter] = useState('');
+
   const addContact = (name, number) => {
     const contact = {
       id: nanoid(),
@@ -26,39 +39,43 @@ export default function App() {
     toast.success('Contact added!');
     return;
   };
+
   const deleteContact = contactId => {
     setContacts(prevContacts => ({
       contacts: prevContacts.filter(contact => contact.id !== contactId),
     }));
   };
+
   const changeFilter = e => {
     setFilter(e.currentTarget.value);
   };
+
   const getFoundedContacts = () => {
     const normalizedFilter = filter.toLowerCase();
     return contacts.filter(contact =>
       contact.name.toLowerCase().includes(normalizedFilter),
     );
   };
-  useEffect(() => {
-    console.log('App componentDidMount');
-    const contacts = localStorage.getItem('contacts');
-    const parsedContacts = JSON.parse(contacts);
-    if (parsedContacts) {
-      setContacts(parsedContacts);
-    } else {
-      setContacts(initialContacts);
-    }
-  }, []);
-  useEffect(
-    prevContacts => {
-      console.log('App componentDidUpdate');
-      if (contacts !== prevContacts) {
-        localStorage.setItem('contacts', JSON.stringify(contacts));
-      }
-    },
-    [contacts],
-  );
+
+  // useEffect(() => {
+  //   console.log('App componentDidMount');
+  //   const contacts = window.localStorage.getItem('contacts');
+  //   const parsedContacts = JSON.parse(contacts);
+  //   if (parsedContacts) {
+  //     setContacts(parsedContacts);
+  //   } else {
+  //     setContacts(initialContacts);
+  //   }
+  // }, []);
+  // useEffect((prevContacts) => {
+  //     console.log('App componentDidUpdate');
+  //     console.log(contacts);
+  //     if (contacts !== prevContacts) {
+  //       window.localStorage.setItem('contacts', JSON.stringify(contacts));
+  //     }
+  //   },
+  //   [contacts],
+  // );
 
   const foundedContacts = getFoundedContacts();
   return (
