@@ -10,13 +10,24 @@ import { Container } from './App.styled';
 
 const useLocalStorage = (key, defaultValue) => {
   const [state, setState] = useState(() => {
+    //  const contacts = window.localStorage.getItem(key);
+    //     const parsedContacts = JSON.parse(contacts);
+    //     if (parsedContacts) {
+    //       setState({ state: parsedContacts });
+    //     } else {
+    //       setState({ state: initialContacts });
+    //     }
+
     return JSON.parse(window.localStorage.getItem(key)) ?? defaultValue;
   });
-  useEffect(() => {
-    // if (contacts !== prevContacts) {
-    window.localStorage.setItem(key, JSON.stringify(key));
-    // }
-  }, [state]);
+  useEffect(
+    prevState => {
+      if (state !== prevState) {
+        window.localStorage.setItem(key, JSON.stringify(state));
+      }
+    },
+    [key, state],
+  );
   return [state, setState];
 };
 
