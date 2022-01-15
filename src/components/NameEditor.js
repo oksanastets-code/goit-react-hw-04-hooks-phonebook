@@ -22,7 +22,7 @@ export default function NameEditor({ onSubmit }) {
 
   const handleSubmit = e => {
     e.preventDefault();
-    const { name, number } = this.state;
+    // const { name, number } = this.state;
     onSubmit(name, number);
     setName('');
     setNumber('');
